@@ -31,15 +31,17 @@ def compile_ui(ui: Union[str, Path], target: Optional[Union[str, Path]] = None, 
         return
 
     if target is None:
-        target_path = ui.parent
+        target_path = ui_path.parent
     else:
         target_path = _convert_path(target)
 
     os.makedirs(target_path, exist_ok=True)
 
-    py_path = f'{ui.stem}{"_ui" if add_ui_suffix else ""}.py'
+    py_path = f'{ui_path.stem}{"_ui" if add_ui_suffix else ""}.py'
     py_path = target_path.joinpath(py_path)
-    with open(ui, 'r') as ui_file:
+    if py_path.exists() and py_path.stat().st_mtime_ns > ui_path.stat().st_mtime_ns:
+        return
+    with open(ui_path, 'r') as ui_file:
         with open(py_path, 'w') as py_file:
             compileUi(ui_file, py_file)
 

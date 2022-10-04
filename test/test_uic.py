@@ -1,6 +1,7 @@
 from pathlib import Path
+from time import sleep
 
-from qtuic import compile_dir
+from qtuic import compile_dir, compile_ui
 
 
 def _assert_path_exists(expected_path):
@@ -78,3 +79,41 @@ def test_ui_generation_recursive_to_target_path(tmpdir):
     compile_dir(Path(tmpdir).joinpath('gui'), Path(tmpdir).joinpath('target'), recursive=True)
     _assert_path_exists(tmpdir.join("target/main_ui.py"))
     _assert_path_exists(tmpdir.join("target/nested/nested_widget_ui.py"))
+
+
+def test_compile_non_ui_file(tmpdir):
+    non_ui = tmpdir.mkdir("gui").join("main.txt")
+    compile_ui(Path(non_ui))
+
+
+def test_compile_ui_file(tmpdir):
+    ui_file = tmpdir.mkdir("gui").join("main.ui")
+    _write_ui_file(ui_file)
+
+    compile_ui(Path(ui_file))
+    _assert_path_exists(tmpdir.join("gui/main_ui.py"))
+
+
+def test_compile_ui_file_as_str_param(tmpdir):
+    ui_file = tmpdir.mkdir("gui").join("main.ui")
+    _write_ui_file(ui_file)
+
+    compile_ui(str(ui_file))
+    _assert_path_exists(tmpdir.join("gui/main_ui.py"))
+
+
+def test_skip_compile_ui_file(tmpdir):
+    ui_file = tmpdir.mkdir("gui").join("main.ui")
+    _write_ui_file(ui_file)
+    sleep(0.01)
+
+    py_file = tmpdir.join("gui/main_ui.py")
+    _write_ui_file(py_file)
+    modif = Path(py_file).stat().st_mtime_ns
+    sleep(0.01)
+
+    _assert_path_exists(tmpdir.join("gui/main_ui.py"))
+    compile_ui(Path(ui_file))
+    _assert_path_exists(tmpdir.join("gui/main_ui.py"))
+
+    assert modif == Path(py_file).stat().st_mtime_ns
