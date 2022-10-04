@@ -12,7 +12,6 @@ REQUIREMENTS: dict = {
     ],
     'test': [
         'pytest',
-        'pytest-qt',
         'pytest-cov',
         'pytest-randomly',
     ],
