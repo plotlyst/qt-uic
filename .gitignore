@@ -1,5 +1,6 @@
 .idea
 report.xml
+generated
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
