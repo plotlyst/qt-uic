@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pyqt: [ 'PyQt5', 'PyQt6' ]
+        pyqt: [ 'PyQt5', 'PyQt6', 'PySide2', 'PySide6' ]
         python-version: [ '3.7', '3.10' ]
 
     steps:

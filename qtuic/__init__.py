@@ -1,8 +1,12 @@
 import os
+import subprocess
 from pathlib import Path
 from typing import Optional, Union
 
-from qtpy.uic import compileUi
+from qtpy import PYQT5, PYQT6, PYSIDE2
+
+if PYQT5 or PYQT6:
+    from qtpy.uic import compileUi
 
 
 def compile_dir(source: Union[str, Path], target: Optional[Union[str, Path]] = None, recursive: bool = False,
@@ -41,9 +45,13 @@ def compile_ui(ui: Union[str, Path], target: Optional[Union[str, Path]] = None, 
     py_path = target_path.joinpath(py_path)
     if py_path.exists() and py_path.stat().st_mtime_ns > ui_path.stat().st_mtime_ns:
         return
-    with open(ui_path, 'r') as ui_file:
-        with open(py_path, 'w') as py_file:
-            compileUi(ui_file, py_file)
+    if PYQT5 or PYQT6:
+        with open(ui_path, 'r') as ui_file:
+            with open(py_path, 'w') as py_file:
+                compileUi(ui_file, py_file)
+    else:
+        cmd = 'pyside2-uic' if PYSIDE2 else 'pyside6-uic'
+        subprocess.run([cmd, '-g', 'python', '-o', str(py_path), str(ui_path)], check=True)
 
 
 def _convert_path(source) -> Path:
