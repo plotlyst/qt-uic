@@ -48,4 +48,8 @@ setup(
         # The 'all' extra is the union of all requirements.
         'all': [req for reqs in REQUIREMENTS.values() for req in reqs],
     },
+    entry_points='''
+        [console_scripts]
+        qt-uic=qtuic:cli
+    ''',
 )

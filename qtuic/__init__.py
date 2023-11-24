@@ -1,3 +1,4 @@
+import argparse
 import os
 import subprocess
 from pathlib import Path
@@ -62,3 +63,12 @@ def _convert_path(source) -> Path:
     if not source_path.is_absolute():
         source_path = Path(os.getcwd()).joinpath(source)
     return source_path
+
+
+def cli():
+    parser = argparse.ArgumentParser(description='A simple program that greets a person.')
+    parser.add_argument('--source', required=True, help='The source folder.')
+    parser.add_argument('--target', required=True, help='The target folder to where the compilation will happen.')
+
+    args = parser.parse_args()
+    compile_dir(args.source, args.target, recursive=True)
